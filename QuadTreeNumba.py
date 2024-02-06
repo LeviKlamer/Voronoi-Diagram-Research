@@ -4,11 +4,12 @@ import pygame
 from CoordBuilder import Coords
 from numba import jit, njit
 import numpy as np
-import csv
+import ArrayBuilder
+# import csv
 
 
 @njit
-def findClosestSeed(p, array_of_seeds):
+def find_closest_seed(p, array_of_seeds):
     n = len(array_of_seeds)
     closest_seed = -1
     shortest_distance = np.inf
@@ -31,11 +32,11 @@ def fill_area(canvas, size, p1, p2, p3, p4, color):
 
 
 @njit
-def recursiveQuad(canvas, size, p1, p2, p3, p4, array_of_seeds=np.array([])):
-    closestSeedP1 = findClosestSeed(p1, array_of_seeds)
-    closestSeedP2 = findClosestSeed(p2, array_of_seeds)
-    closestSeedP3 = findClosestSeed(p3, array_of_seeds)
-    closestSeedP4 = findClosestSeed(p4, array_of_seeds)
+def recursive_quad(canvas, size, p1, p2, p3, p4, array_of_seeds=np.array([])):
+    closestSeedP1 = find_closest_seed(p1, array_of_seeds)
+    closestSeedP2 = find_closest_seed(p2, array_of_seeds)
+    closestSeedP3 = find_closest_seed(p3, array_of_seeds)
+    closestSeedP4 = find_closest_seed(p4, array_of_seeds)
 
     if (closestSeedP1 == closestSeedP2) and (closestSeedP2 == closestSeedP3) and (closestSeedP3 == closestSeedP4):
         fill_area(canvas, size, p1, p2, p3, p4, closestSeedP1)
@@ -63,21 +64,20 @@ def recursiveQuad(canvas, size, p1, p2, p3, p4, array_of_seeds=np.array([])):
         quad4p3 = (middlePointX, p4[1])
         quad4p4 = p4
 
-        recursiveQuad(canvas, size, quad1p1, quad1p2, quad1p3, quad1p4, array_of_seeds)
-        recursiveQuad(canvas, size, quad2p1, quad2p2, quad2p3, quad2p4, array_of_seeds)
-        recursiveQuad(canvas, size, quad3p1, quad3p2, quad3p3, quad3p4, array_of_seeds)
-        recursiveQuad(canvas, size, quad4p1, quad4p2, quad4p3, quad4p4, array_of_seeds)
+        recursive_quad(canvas, size, quad1p1, quad1p2, quad1p3, quad1p4, array_of_seeds)
+        recursive_quad(canvas, size, quad2p1, quad2p2, quad2p3, quad2p4, array_of_seeds)
+        recursive_quad(canvas, size, quad3p1, quad3p2, quad3p3, quad3p4, array_of_seeds)
+        recursive_quad(canvas, size, quad4p1, quad4p2, quad4p3, quad4p4, array_of_seeds)
 
 
 class VoronoiGenerator:
     def __init__(self, arr_of_coords):
         self.array_of_seeds = []
-        self.array_of_seeds = np.array(self.array_of_seeds, dtype=np.float64)
         self.size = 2048
+        self.array_of_seeds = np.array(self.array_of_seeds, dtype=np.float64)
         self.canvas_original = [-1] * (self.size * self.size)
         self.canvas = np.array(self.canvas_original, dtype=np.int32)
         self.colors = []
-
         self.coords = Coords(self.size)
 
         self.coords.latlongs = arr_of_coords
@@ -102,10 +102,10 @@ class VoronoiGenerator:
 
         start_time = time.time()
 
-        recursiveQuad(self.canvas, self.size, p1, p2, p3, p4, self.array_of_seeds)
+        recursive_quad(self.canvas, self.size, p1, p2, p3, p4, self.array_of_seeds)
         end_time = time.time()
         duration = (end_time - start_time) * 1000
-        print(f"Time for quad tree Voronoi: {duration} milliseconds with {self.n} seeds.")
+        print(f"Time for quad tree Voronoi: {duration} milliseconds with {self.n} seeds.")  # Change to just milliseconds, easier to pipe into file
 
     def display_voronoi(self):
         pygame.init()
@@ -131,6 +131,15 @@ class VoronoiGenerator:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+                # Give coordinates of mouse click
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    print(f"Mouse clicked at ({mouse_x * 2}, {mouse_y * 2})")
+
+                    local_coords = [mouse_x*2, mouse_y*2]
+                    print(f"Coordinates: {self.coords.to_latlong_1D(local_coords)}")
+
             # Scale the 2048x2048 surface down to preferred screen viewing, then display the new surface
             scaled_surface = pygame.transform.scale(dummy_surface, window_size)
             window.blit(scaled_surface, (0, 0))
@@ -140,22 +149,19 @@ class VoronoiGenerator:
 
 
 def main():
-    bus_stop_coords = []
-
-    with open('data/coords.csv', 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            bus_stop_coords.append([float(value) for value in row])
+    # bus_stop_coords = ArrayBuilder.build_bus()
+    # protestant_coords = ArrayBuilder.build_protestant()
+    school_coords = ArrayBuilder.build_schools()
+    # restaurant_coords = ArrayBuilder.build_restaurants()
 
     hospital_coords = [[42.97064682743409, -85.66608871623687], [42.94424606653896, -85.55830002184193], [42.963471500540415, -85.66624111127469], [42.950680440861895, -85.5606616812743],
                        [43.01559138589651, -85.71960201023141], [42.89066585258278, -85.76713512360661], [42.958811064761186, -85.66236868254477], [42.97070084999957, -85.66476558145712],
                        [42.95378686333377, -85.62298869532792], [42.95367076159726, -85.6232751217235], [42.86027044244486, -85.71607368189366], [42.856100851064355, -85.76503446041109], [42.883621600674694, -85.62107965807779]]
 
+    debug = [[43.09608, -85.89402], [42.76063, -85.89402]]
 
-    example = [[42.913532, -85.727678], [42.998889, -85.630125], [42.993708, -85.721139], [42.953035, -85.662280],
-               [42.906747, -85.472623]]
+    generator = VoronoiGenerator(school_coords)
 
-    generator = VoronoiGenerator(hospital_coords)
     print("While Compiling:")
     generator.generate_voronoi()
     print("Already Compiled:")

@@ -18,21 +18,36 @@ class Coords():
             new_coord = [0, 0]
             new_coord[0] = math.floor((1 - ((i[0] - self.min_lat) / (self.max_lat - self.min_lat))) * self.size)  # take the inverse because our axis is opposite of theirs
             new_coord[1] = math.floor((i[1] - self.min_long) / (self.max_long - self.min_long) * self.size)
-            new_coord_arr.append(new_coord)
+
+            if 0 <= new_coord[0] <= self.size and 0 <= new_coord[1] <= self.size:
+                new_coord_arr.append(new_coord)
 
         return new_coord_arr
 
     def to_latlong(self, arr):
         # Does the opposite of the one above it
         latlong_arr = []
+
         for i in arr:
             new_coord = [0, 0]
-            new_coord[0] = (i[0] / self.size) * (self.max_lat - self.min_lat) + self.min_lat
-            new_coord[1] = (i[1] / self.size) * (self.max_long - self.min_long) + self.min_long
+            new_coord[0] = ((self.size - i[0]) / self.size) * (self.max_lat - self.min_lat) + self.min_lat
+            new_coord[1] = (float(i[1]) / self.size) * (self.max_long - self.min_long) + self.min_long
 
             latlong_arr.append(new_coord)
 
         return latlong_arr
+
+    def to_latlong_1D(self, arr):
+        latlong_arr = []
+
+        x = ((self.size - arr[0]) / self.size) * (self.max_lat - self.min_lat) + self.min_lat
+        y = (float(arr[1]) / self.size) * (self.max_long - self.min_long) + self.min_long
+        latlong_arr.append(x)
+        latlong_arr.append(y)
+
+        return latlong_arr
+
+
 
 
 
