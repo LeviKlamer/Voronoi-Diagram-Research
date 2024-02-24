@@ -9,12 +9,11 @@ class Coords():
         self.max_long = -85.385939  # Bottom right
         self.size = size
         self.latlongs = []
-        self.resized_coords = []
 
-    def fix_coords(self, arr):
+    def fix_coords(self):
         # Applies min-max formula to each coord long/lat, multiplies by size for new matrix coords
         new_coord_arr = []
-        for i in arr:
+        for i in self.latlongs:
             new_coord = [0, 0]
             new_coord[0] = math.floor((1 - ((i[0] - self.min_lat) / (self.max_lat - self.min_lat))) * self.size)  # take the inverse because our axis is opposite of theirs
             new_coord[1] = math.floor((i[1] - self.min_long) / (self.max_long - self.min_long) * self.size)
@@ -56,4 +55,10 @@ class Coords():
 bus_coords.latlongs = [[42.9626334737292, -85.6679353753174], [42.9597360004466, -85.6679609996548], [42.9580959999672, -85.6678699997781]]
 print(f'OG lat/longs: {bus_coords.latlongs}')
 print(f'conversion coords: {bus_coords.resized_coords}')
-print(f'New lat/longs: {bus_coords.to_latlong(bus_coords.resized_coords)}')'''
+print(f'New lat/longs: {bus_coords.to_latlong(bus_coords.resized_coords)}')
+'''
+
+# new_debug = Coords(2048)
+# new_debug.latlongs = new_debug.to_latlong([[100, 100], [1948, 100], [1948, 1948]])
+# print(new_debug.latlongs)
+

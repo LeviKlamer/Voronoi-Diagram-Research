@@ -1,6 +1,5 @@
 import csv
 
-
 def build_bus():
     bus_stop_coords = []
 
@@ -34,6 +33,7 @@ def build_schools():
             school_coords.append([float(value) for value in row])
 
     return school_coords
+
 
 def build_restaurants():
     restaurant_coords = []
