@@ -1,5 +1,17 @@
 import csv
 
+
+def choose(chosen_set):
+    if chosen_set == 'Schools':
+        return build_schools()
+    elif chosen_set == 'Churches':
+        return build_protestant()
+    elif chosen_set == 'Restaurants':
+        return build_restaurants()
+    elif chosen_set == 'Bus Stops':
+        return build_bus()
+
+
 def build_bus():
     bus_stop_coords = []
 

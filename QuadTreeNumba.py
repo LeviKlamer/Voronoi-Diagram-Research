@@ -135,7 +135,8 @@ def main():
 
 
     start_menu = DisplayMenu()
-    generator = VoronoiGenerator(start_menu.voronoi_selection, start_menu.heat_map_check)
+    chosen_array = ArrayBuilder.choose(start_menu.voronoi_selection)
+    generator = VoronoiGenerator(chosen_array, start_menu.heat_map_check)
 
     print("While Compiling:")
     generator.generate_voronoi()
