@@ -14,6 +14,7 @@ class VoronoiDisplay:
     def display_voronoi(self):
         # Check if the user wants to make a heatmap or a normal Voronoi.
         pygame.init()
+        pygame.display.set_caption("Diagram")
         window_size = (self.size / 2, self.size / 2)
         window = pygame.display.set_mode(window_size)
         surface = pygame.Surface((self.size, self.size))

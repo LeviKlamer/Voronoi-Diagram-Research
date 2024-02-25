@@ -10,14 +10,14 @@ class DisplayMenu:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((1280, 720))
-        pygame.display.set_caption("Menu")
+        pygame.display.set_caption("Voronoi Generator")
 
         self.BLACK = (0, 0, 0)
 
         self.menu_font = pygame.font.SysFont('arial', 100)
         self.button_font = pygame.font.SysFont('arial', 75)
 
-        self.voronoi_selection = ArrayBuilder.build_schools()
+        self.voronoi_selection = "Schools"
         self.heat_map_check = True
 
         self.close_display = False
@@ -77,6 +77,9 @@ class DisplayMenu:
                     quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.play_button.checkForInput(event.pos):
+                        loading_text = self.menu_font.render("Loading...", True, WHITE)
+                        loading_rect = loading_text.get_rect(center=(200, 650))
+                        self.screen.blit(loading_text, loading_rect)
                         running = False
                     elif self.options_button.checkForInput(event.pos):
                         self.options()

@@ -75,7 +75,7 @@ def recursive_quad(canvas, size, p1, p2, p3, p4, index_heat, array_of_seeds=np.a
 class VoronoiGenerator:
     def __init__(self, arr_of_coords, heat_map_check):
         self.array_of_seeds = []
-        self.size = 1024
+        self.size = 2048
         self.array_of_seeds = np.array(self.array_of_seeds, dtype=np.float64)
         self.canvas = np.array([-1] * (self.size * self.size), dtype=np.int32)
 
